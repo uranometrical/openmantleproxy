@@ -5,7 +5,6 @@ use hudsucker::{
     *,
 };
 use argh::FromArgs;
-use url::Url;
 
 #[derive(FromArgs)]
 #[argh(description = "omp arguments")]
@@ -98,19 +97,14 @@ async fn main() {
             .expect("Failed to parse key, aborting")
             .remove(0)
     );
-
     println!("Creating certificate authority.");
-
     let ca:RcgenAuthority = RcgenAuthority::new(
         key, cert, 1_000
     ).expect("Failed to create certificate authority");
 
-    let url = Url::parse("http://optifine.net").unwrap();
-    let addrs = *url.socket_addrs(|| None).unwrap().get(0).unwrap();
-
     println!("Building proxy.");
     let proxy = ProxyBuilder::new()
-        .with_addr(addrs) // s.optifine.net:80
+        .with_addr(std::net::SocketAddr::from(([127, 0, 0, 1], 443)))
         .with_rustls_client()
         .with_ca(ca)
         .with_http_handler(LogHandler {})
