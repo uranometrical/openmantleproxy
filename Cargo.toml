@@ -1,0 +1,11 @@
+[package]
+name = "openmantleproxy"
+version = "1.0.0"
+authors = ["Tomat"]
+edition = "2021"
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+rustls-pemfile = "0.2.1"
+hudsucker = "0.10.0"
+argh = "0.1.4"
