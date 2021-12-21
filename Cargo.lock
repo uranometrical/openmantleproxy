@@ -938,6 +938,7 @@ dependencies = [
  "hudsucker",
  "rustls-pemfile",
  "tokio",
+ "url",
 ]
 
 [[package]]

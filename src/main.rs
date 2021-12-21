@@ -1,5 +1,11 @@
-use hudsucker::{ certificate_authority::RcgenAuthority, * };
+use hudsucker::{
+    async_trait::async_trait,
+    certificate_authority::RcgenAuthority,
+    hyper::{Body, Request, Response},
+    *,
+};
 use argh::FromArgs;
+use url::Url;
 
 #[derive(FromArgs)]
 #[argh(description = "omp arguments")]
@@ -16,6 +22,28 @@ struct OmpArgs {
         description = "provides help with proxy modes (see \"--mode\"). prints a simple message that describes proxy mode functionality."
     )]
     mode_help: bool
+}
+
+#[derive(Clone)]
+struct LogHandler {}
+
+#[async_trait]
+impl HttpHandler for LogHandler {
+    async fn handle_request(
+        &mut self,
+        _ctx: &HttpContext,
+        req: Request<Body>,
+    ) -> RequestOrResponse {
+        println!("request");
+        println!("{:?}", req);
+        RequestOrResponse::Request(req)
+    }
+
+    async fn handle_response(&mut self, _ctx: &HttpContext, res: Response<Body>) -> Response<Body> {
+        println!("response");
+        println!("{:?}", res);
+        res
+    }
 }
 
 #[tokio::main]
@@ -70,16 +98,22 @@ async fn main() {
             .expect("Failed to parse key, aborting")
             .remove(0)
     );
+
     println!("Creating certificate authority.");
+
     let ca:RcgenAuthority = RcgenAuthority::new(
         key, cert, 1_000
     ).expect("Failed to create certificate authority");
 
+    let url = Url::parse("http://optifine.net").unwrap();
+    let addrs = *url.socket_addrs(|| None).unwrap().get(0).unwrap();
+
     println!("Building proxy.");
     let proxy = ProxyBuilder::new()
-        .with_addr(std::net::SocketAddr::from(([127, 0, 0, 1], 3000)))
+        .with_addr(addrs) // s.optifine.net:80
         .with_rustls_client()
         .with_ca(ca)
+        .with_http_handler(LogHandler {})
         .build();
 
     println!("Starting proxy.");
