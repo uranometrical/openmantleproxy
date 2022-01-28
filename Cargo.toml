@@ -6,7 +6,10 @@ edition = "2021"
 
 [dependencies]
 tokio = { version = "1", features = ["full"] }
-rustls-pemfile = "0.2.1"
-hudsucker = "0.10.0"
+bufstream = "0.1.4"
+chrono = "0.4.19"
+port_scanner = "0.1.5"
 argh = "0.1.4"
 url = "2.2.2"
+text_io = "0.1.9"
+reqwest = "0.11.9"
