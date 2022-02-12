@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CliFx;
 using CliFx.Attributes;
@@ -12,17 +13,12 @@ namespace Uranometrical.OpenMantleProxy.Commands
     {
         public const string Description = "Wipes any redirects pointing away from \"s.optifine.net\"." +
                                           "This reverts any edits by any cape servers.";
-        
+
         public async ValueTask ExecuteAsync(IConsole console)
         {
             await console.Output.WriteLineAsync("Cleaning hosts file...");
-            
-            using HostsFileEditor editor = new();
-            editor.Write((writer, contents) =>
-            {
-                foreach (string line in contents.Where(x => !x.EndsWith(" s.optifine.net")))
-                    writer.WriteLine(line);
-            });
+
+            new HostsFileEditor().Write(contents => contents.Where(x => !x.EndsWith(" s.optifine.net")));
 
             await console.Output.WriteLineAsync("Cleaned host file!");
         }

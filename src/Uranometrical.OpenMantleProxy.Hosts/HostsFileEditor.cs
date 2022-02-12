@@ -1,23 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace Uranometrical.OpenMantleProxy.Hosts
 {
     /// <summary>
-    ///     Disposable object that handles editing a system's <c>hosts</c> file.
+    ///     An object that handles editing a system's <c>hosts</c> file.
     /// </summary>
-    public class HostsFileEditor : IDisposable
+    public class HostsFileEditor
     {
         /// <summary>
         ///     An <see cref="Action"/> (<see cref="Delegate"/>) allowing a user to interface with <see cref="HostsFileEditor"/> to enable file writing.
         /// </summary>
-        public delegate void HostsFileWriter(StreamWriter writer, string[] contents);
+        public delegate IEnumerable<string> HostsFileWriter(string[] contents);
 
         protected readonly FileInfo HostsFile;
-        protected readonly FileStream HostsStream;
-        protected readonly StreamWriter HostsWriter;
         protected readonly string[] Contents;
 
         /// <summary>
@@ -27,20 +24,7 @@ namespace Uranometrical.OpenMantleProxy.Hosts
         public HostsFileEditor(FileInfo hostsFile)
         {
             HostsFile = hostsFile;
-            HostsStream = new FileStream(HostsFile.ToString(), FileMode.Open, FileAccess.ReadWrite);
-            HostsWriter = new StreamWriter(HostsStream)
-            {
-                AutoFlush = true
-            };
-
-            string? line;
-            List<string> lines = new();
-            using StreamReader reader = new(HostsStream, Encoding.UTF8, true, 1024, true);
-
-            while ((line = reader.ReadLine()) != null)
-                lines.Add(line);
-
-            Contents = lines.ToArray();
+            Contents = File.ReadAllLines(HostsFile.ToString());
         }
 
         /// <summary>
@@ -62,21 +46,9 @@ namespace Uranometrical.OpenMantleProxy.Hosts
         ///     Handles writing to the <c>hosts</c> file.
         /// </summary>
         /// <param name="fileWriter"></param>
-        public virtual void Write(HostsFileWriter fileWriter) => fileWriter(HostsWriter, Contents);
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposing)
-                return;
-
-            HostsWriter.Dispose();
-            HostsStream.Dispose();
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+        public virtual void Write(HostsFileWriter fileWriter) => File.WriteAllLines(
+            HostsFile.ToString(),
+            fileWriter(Contents)
+        );
     }
 }
