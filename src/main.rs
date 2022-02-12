@@ -1,8 +1,8 @@
 use argh::FromArgs;
 use std::fs::File;
-use std::io::{BufRead, BufReader, Write};
-use std::net::TcpListener;
-use std::net::TcpStream;
+use std::io::{Read, Write, BufReader, BufRead};
+use std::net::{TcpStream, TcpListener};
+use std::thread;
 
 #[derive(FromArgs)]
 #[argh(description = "omp arguments")]
@@ -87,8 +87,7 @@ fn main() {
 
     println!("Resolved open port: {}", port);
 
-    let listener =
-        TcpListener::bind(format!("127.0.0.1:{}", port)).expect("Failed to bind to TcpListener.");
+    let listener = TcpListener::bind(format!("127.0.0.1:{}", port)).unwrap();
 
     println!("Binded to: 127.0.0.1: {}\n", port);
 
@@ -100,11 +99,15 @@ fn main() {
 
     for stream in listener.incoming() {
         match stream {
-            Ok(stream) => match handle(stream) {
-                Err(e) => eprintln!("Error handling incoming request: {}", e),
-                _ => {}
-            },
-            Err(e) => eprintln!("Connection failed: {}", e),
+            Ok(stream) => {
+                thread::spawn(|| {
+                    handle_stream(stream);
+                });
+            }
+
+            Err(e) => {
+                println!("Error: {}", e);
+            }
         }
     }
 }
@@ -155,13 +158,31 @@ fn clean_hosts(hosts_path: &String, additional_line: Option<String>) {
         File::create(hosts_path).expect("Could not open hosts, is the process lacking permission?"),
         "{}",
         format!("{}", lines.join("\n"))
-    );
+    ).unwrap();
 }
 
-fn handle(stream: TcpStream) -> std::io::Result<()> {
+fn handle_stream(stream: TcpStream) {
+    stream_read(&stream);
+    stream_write(stream);
+}
 
-    
-    Ok(())
+fn stream_read(mut stream: &TcpStream) {
+    let mut buf = [0u8 ;4096];
+    match stream.read(&mut buf) {
+        Ok(_) => {
+            let req_str = String::from_utf8_lossy(&buf);
+            println!("{}", req_str);
+            },
+        Err(e) => println!("Unable to read stream: {}", e),
+    }
+}
+
+fn stream_write(mut stream: TcpStream) {
+    let response = b"HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n<html><body>Hello world</body></html>\r\n";
+    match stream.write(response) {
+        Ok(_) => println!("Response sent"),
+        Err(e) => println!("Failed sending response: {}", e),
+    }
 }
 
 /*async fn shutdown_signal() {
