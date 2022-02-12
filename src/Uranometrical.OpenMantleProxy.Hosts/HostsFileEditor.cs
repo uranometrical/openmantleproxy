@@ -26,7 +26,7 @@ namespace Uranometrical.OpenMantleProxy.Hosts
         public HostsFileEditor(FileInfo hostsFile)
         {
             HostsFile = hostsFile;
-            HostsStream = new FileStream(hostsFile.ToString(), FileMode.Open);
+            HostsStream = new FileStream(HostsFile.ToString(), FileMode.Open);
             HostsWriter = new StreamWriter(HostsStream);
             
             string? line;

@@ -12,7 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Commands" />
+      <ProjectReference Include="..\Uranometrical.OpenMantleProxy.Hosts\Uranometrical.OpenMantleProxy.Hosts.csproj" />
     </ItemGroup>
 
 </Project>
