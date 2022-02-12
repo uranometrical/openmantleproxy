@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace Uranometrical.OpenMantleProxy.Hosts
 {
@@ -13,12 +14,12 @@ namespace Uranometrical.OpenMantleProxy.Hosts
         ///     An <see cref="Action"/> (<see cref="Delegate"/>) allowing a user to interface with <see cref="HostsFileEditor"/> to enable file writing.
         /// </summary>
         public delegate void HostsFileWriter(StreamWriter writer, string[] contents);
-        
+
         protected readonly FileInfo HostsFile;
         protected readonly FileStream HostsStream;
         protected readonly StreamWriter HostsWriter;
         protected readonly string[] Contents;
-        
+
         /// <summary>
         ///     Creates a new <see cref="HostsFileEditor"/> instance.
         /// </summary>
@@ -26,19 +27,22 @@ namespace Uranometrical.OpenMantleProxy.Hosts
         public HostsFileEditor(FileInfo hostsFile)
         {
             HostsFile = hostsFile;
-            HostsStream = new FileStream(HostsFile.ToString(), FileMode.Open);
-            HostsWriter = new StreamWriter(HostsStream);
-            
+            HostsStream = new FileStream(HostsFile.ToString(), FileMode.Open, FileAccess.ReadWrite);
+            HostsWriter = new StreamWriter(HostsStream)
+            {
+                AutoFlush = true
+            };
+
             string? line;
             List<string> lines = new();
-            using StreamReader reader = new(HostsStream);
-            
+            using StreamReader reader = new(HostsStream, Encoding.UTF8, true, 1024, true);
+
             while ((line = reader.ReadLine()) != null)
                 lines.Add(line);
-            
+
             Contents = lines.ToArray();
         }
-        
+
         /// <summary>
         ///     Creates a new <see cref="HostsFileEditor"/> instance.
         /// </summary>
@@ -64,11 +68,8 @@ namespace Uranometrical.OpenMantleProxy.Hosts
         {
             if (!disposing)
                 return;
-            
-            HostsWriter.Flush();
+
             HostsWriter.Dispose();
-            
-            HostsStream.Flush();
             HostsStream.Dispose();
         }
 

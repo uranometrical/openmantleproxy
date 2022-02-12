@@ -21,7 +21,7 @@ namespace Uranometrical.OpenMantleProxy.Commands
             editor.Write((writer, contents) =>
             {
                 foreach (string line in contents.Where(x => !x.EndsWith(" s.optifine.net")))
-                    writer.WriteLine(writer);
+                    writer.WriteLine(line);
             });
 
             await console.Output.WriteLineAsync("Cleaned host file!");
