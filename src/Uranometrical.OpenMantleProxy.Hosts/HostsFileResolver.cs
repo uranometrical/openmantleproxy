@@ -40,11 +40,11 @@ namespace Uranometrical.OpenMantleProxy.Hosts
         public static FileInfo ResolveWindows()
         {
             // https://github.com/uranometrical/openmantleproxy/issues/1
-            return new FileInfo((string) Registry.GetValue(
-                @"\HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters",
-                "DataBasePath",
-                @"C:\Windows\System32\Drivers\etc\hosts"
-            )!);
+            object? value = Registry.LocalMachine.OpenSubKey(
+                @"SYSTEM\CurrentControlSet\Services\Tcpip\Parameters"
+            )?.GetValue("DataBasePath");
+            
+            return new FileInfo(Path.Combine((string?) value ?? @"C:\Windows\System32\Drivers\etc", "hosts"));
         }
 
         /// <summary>
