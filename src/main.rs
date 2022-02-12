@@ -1,12 +1,15 @@
 use argh::FromArgs;
 use std::fs::File;
 use std::io::{BufRead, BufReader, Write};
-use std::net::TcpListener;
 
 use hyper::service::{make_service_fn, service_fn};
 use hyper::{Body, Request, Response, Server};
 use std::convert::Infallible;
 use std::net::SocketAddr;
+
+use http::status::StatusCode;
+use http::uri::Uri;
+use hyper::Client;
 
 #[derive(FromArgs)]
 #[argh(description = "omp arguments")]
@@ -56,15 +59,7 @@ async fn main() {
         return;
     }
 
-    let proxy_mode: String;
-
-    if args.mode.is_none() {
-        println!("Could not resolve argument: \"--mode\" (\"-m\")");
-        println!("Setting mode to default: \"mantle\"");
-        proxy_mode = "mantle".to_string();
-    } else {
-        proxy_mode = args.mode.unwrap();
-    }
+    let proxy_mode: String = get_proxy_mode();
 
     println!(
         "
@@ -84,14 +79,6 @@ async fn main() {
     );
     println!("\nUsing proxy mode: {}", proxy_mode);
 
-    //let mut port: u16 = 3764;
-
-    //while !port_scanner::local_port_available(port) {
-    //    port += 1;
-    //}
-
-    //println!("Resolved open port: {}", port);
-
     let hosts_path = resolve_hosts_path();
     clean_hosts(
         &hosts_path,
@@ -107,6 +94,19 @@ async fn main() {
     if let Err(e) = server.await {
         eprintln!("Error: {}", e);
     }
+}
+
+fn get_proxy_mode() -> String {
+    let args: OmpArgs = argh::from_env();
+    let proxy_mode: String;
+
+    if args.mode.is_none() {
+        proxy_mode = "mantle".to_string();
+    } else {
+        proxy_mode = args.mode.unwrap();
+    }
+
+    proxy_mode.to_lowercase()
 }
 
 fn resolve_hosts_path() -> String {
@@ -160,7 +160,65 @@ fn clean_hosts(hosts_path: &String, additional_line: Option<String>) {
 }
 
 async fn handle_capes(_req: Request<Body>) -> Result<Response<Body>, Infallible> {
+    println!("{}", _req.uri());
+    resolve_cape(_req.uri().to_string()).await;
     Ok(Response::new("Hello, World".into()))
+}
+
+async fn resolve_cape(
+    input: String,
+) -> Result<Response<hyper::Body>, Box<dyn std::error::Error + Send + Sync>> {
+    let proxy_mode: String = get_proxy_mode();
+    let mut servers: Vec<&str> = vec![];
+
+    // TODO: Allow people to insert their own cape servers?
+    if proxy_mode == "mantle" {
+        servers.push("capes.mantle.gg");
+    } else if proxy_mode == "optimantle" {
+        // s.optifine.net
+        // TODO: Is this safe to use as a constant?
+        servers.push("107.182.233.85");
+        servers.push("capes.mantle.gg");
+    } else if proxy_mode == "mantlefine" {
+        servers.push("capes.mantle.gg");
+        servers.push("107.182.233.85");
+    }
+
+    let client = Client::new();
+
+    for server in servers {
+        let uri: Uri = Uri::builder()
+            .scheme("http")
+            .authority(server)
+            .path_and_query(input.to_string())
+            .build()
+            .unwrap();
+
+        let response = client.get(uri).await?;
+
+        println!("{}: {}", server, response.status());
+
+        let status = response.status();
+        let consumed = response.into_body();
+        let bytes = hyper::body::to_bytes(consumed).await?;
+        let body = String::from_utf8(bytes.to_vec()).unwrap();
+        let new = hyper::Body::from(bytes);
+
+        if status.as_str() != "404" {
+            println!("{}", body);
+
+            // too lazy to check as json
+            // this is required as mantle doesn't return a 404, but rather a json stating the issue
+            if !body.as_str().contains("Not Found") {
+                println!("{} resolved.", server);
+                return Ok(Response::new(new));
+            }
+        }
+
+        return Ok(Response::new(new));
+    }
+
+    Ok(Response::new(hyper::Body::default()))
 }
 
 /*async fn shutdown_signal() {
