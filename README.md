@@ -6,7 +6,11 @@ OpenMantleProxy starts a local HTTP server to process any received requests. Aft
 
 Due to the requirement of modifying the computer's `hosts` file, it is more than likely that the program will require administrator privileges on any Windows operating system, and root on *Nix.
 
+To start a server, run `dotnet Uranometrical.OpenMantleProxy.dll server`. Please read the "Modes" section to understand which one is best for you.
+
 ### Modes
+Use a mode by appending `--mode` (optionally, `-m`) to the command above, followed by the mode's name.
+
 There are three different proxy modes in OpenMantleProxy, detailed below:
 
 #### `mantle`
@@ -17,6 +21,9 @@ There are three different proxy modes in OpenMantleProxy, detailed below:
 
 #### `mantlefine`
 `mantlefine` functions identically to `optifine`, just in reverse.
+
+#### `custom`
+`custom` ignores any predefined servers and instead expects an additional input (`--servers`/`-s`), which it will pull from for capes instead.
 
 ## Security
 OpenMantleProxy only establishes connections (conditionally) to `capes.mantle.gg` and `s.optifine.net`. As long as these domains remain safe moving forward (essentially assuming no malicious third party takes control of either domain), there are no security risks. Always be safe while installing software online, however, as this program does require elevated permissions. If you do not feel a binary release is safe, please compile this program manually after throughly examining its code.
@@ -32,4 +39,4 @@ OptiFine does not have any restrictions either.
 Installation automatically occurs when launching OpenMantleProxy without `--clean` (`-c`). Modes will not affect how the instllation is done.
 
 ## Uninstallation
-Run OpnmMantleProxy with the `--clean` (`-c`) launch argument to scrub away any residue left by Mantle or OpenMantleProxy (removes any redirects from `s.optifine.net`).
+Run OpenMantleProxy with the `clean` option (instead of `server`) to scrub away any residue left by Mantle or OpenMantleProxy (removes any redirects from `s.optifine.net`).
