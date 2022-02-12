@@ -12,7 +12,7 @@ namespace Uranometrical.OpenMantleProxy.Commands
     public class CleanHostsCommand : ICommand
     {
         public const string Description = "Wipes any redirects pointing away from \"s.optifine.net\"." +
-                                          "This reverts any edits by any cape servers.";
+                                          "\n                    This reverts any edits by any cape servers.";
 
         public async ValueTask ExecuteAsync(IConsole console)
         {
