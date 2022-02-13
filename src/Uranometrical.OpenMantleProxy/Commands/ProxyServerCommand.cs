@@ -49,6 +49,9 @@ namespace Uranometrical.OpenMantleProxy.Commands
         [CommandOption("servers", 's', Description = "The servers to use. Only used if \"mode\" is set to Custom.")]
         public string[] Servers { get; private set; } = Array.Empty<string>();
 
+        [CommandOption("nohosts", 'n', Description = "Skip any modifications to the hosts file. For running on servers.")]
+        public bool NoHosts { get; init; } = false;
+
         public async ValueTask ExecuteAsync(IConsole console)
         {
             await console.Output.WriteLineAsync(
@@ -72,16 +75,19 @@ namespace Uranometrical.OpenMantleProxy.Commands
             if (Mode == ProxyMode.Custom)
                 await console.Output.WriteLineAsync("Custom servers: " + string.Join(", ", Servers));
 
-            await console.Output.WriteLineAsync("\nModifying hosts file...");
-
-            new HostsFileEditor().Write(contents =>
+            if (!NoHosts)
             {
-                List<string> content = contents.Where(x => !x.EndsWith(" s.optifine.net")).ToList();
-                content.Add("127.0.0.1 s.optifine.net");
-                return content;
-            });
+                await console.Output.WriteLineAsync("\nModifying hosts file...");
 
-            await console.Output.WriteLineAsync("Modified hosts file!");
+                new HostsFileEditor().Write(contents =>
+                {
+                    List<string> content = contents.Where(x => !x.EndsWith(" s.optifine.net")).ToList();
+                    content.Add("127.0.0.1 s.optifine.net");
+                    return content;
+                });
+
+                await console.Output.WriteLineAsync("Modified hosts file!");
+            }
 
             switch (Mode)
             {
@@ -112,9 +118,10 @@ namespace Uranometrical.OpenMantleProxy.Commands
             CapeServer server = new(Servers);
             server.Listen();
 
-            await console.Output.WriteLineAsync("Killed server! Reverting hosts file...");
+            await console.Output.WriteLineAsync("Killed server!" + (NoHosts ? "" : " Reverting hosts file..."));
 
-            new HostsFileEditor().Write(contents => contents.Where(x => !x.EndsWith(" s.optifine.net")));
+            if (!NoHosts) 
+                new HostsFileEditor().Write(contents => contents.Where(x => !x.EndsWith(" s.optifine.net")));
 
             await console.Output.WriteLineAsync("Operations completed.!");
         }
