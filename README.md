@@ -7,6 +7,8 @@ Please run this *before* opening any Minecraft instances. You have to run these 
 
 ![gif](https://user-images.githubusercontent.com/27323911/153735613-30917e1e-1683-494d-8bf7-8cd3b3e72ed7.gif)
 
+If you would rather not use the command line, I have provided `.bat` scripts (for Windows) and `.sh` scripts (for *Nix) as an alternative. `.sh` scripts must be ran as root, but `.bat` scripts will instead prompt the user for admin privileges.
+
 ## Functionality
 OpenMantleProxy starts a local HTTP server to process any received requests. After starting the HTTP server, OpenMantleProxy modifies the computer's `hosts` file to redirect any `s.optifine.net` (OptiFine cape server) requests to the newly-opened HTTP server. Different modes will make the redirect function differently.
 
