@@ -3,6 +3,8 @@ Open-source alternative to the traditional Mantle program, allowing you to pull 
 
 To run this program, please grab the latest release from [here](https://github.com/uranometrical/openmantleproxy/releases). You will need the .NET 6 SDK, which you can get from [here](https://dotnet.microsoft.com/en-us/download/dotnet/6.0).
 
+Please run this *before* opening any Minecraft instances. You have to run these commands (i.e. `dotnet Uranometrical.OpenMantleProxy.dll ...`) through the command line, as well. Be sure so your cmd process with admin privileges in order to allow modifications to be made to the `hosts` file.
+
 ## Functionality
 OpenMantleProxy starts a local HTTP server to process any received requests. After starting the HTTP server, OpenMantleProxy modifies the computer's `hosts` file to redirect any `s.optifine.net` (OptiFine cape server) requests to the newly-opened HTTP server. Different modes will make the redirect function differently.
 
