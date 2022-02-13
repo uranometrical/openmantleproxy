@@ -113,7 +113,7 @@ namespace Uranometrical.OpenMantleProxy.Commands
             }
 
 
-            await console.Output.WriteLineAsync("Starting server! You can kill the server by pressing <ENTER>.");
+            await console.Output.WriteLineAsync("Starting server!");
 
             CapeServer server = new(Servers);
             server.Listen();

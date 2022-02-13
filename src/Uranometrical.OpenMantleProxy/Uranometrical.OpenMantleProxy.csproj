@@ -5,6 +5,8 @@
         <Nullable>enable</Nullable>
         <OutputType>Exe</OutputType>
         <LangVersion>default</LangVersion>
+        <AssemblyVersion>1.0.0.1</AssemblyVersion>
+        <FileVersion>1.0.0.1</FileVersion>
     </PropertyGroup>
 
     <ItemGroup>
@@ -13,6 +15,27 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Uranometrical.OpenMantleProxy.Hosts\Uranometrical.OpenMantleProxy.Hosts.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="start-mantle.bat">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="start-mantle.sh">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="start-mantlefine.bat">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="start-mantlefine.sh">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="start-optimantle.bat">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="start-optimantle.sh">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>
