@@ -5,6 +5,8 @@ To run this program, please grab the latest release from [here](https://github.c
 
 Please run this *before* opening any Minecraft instances. You have to run these commands (i.e. `dotnet Uranometrical.OpenMantleProxy.dll ...`) through the command line, as well. Be sure so your cmd process with admin privileges in order to allow modifications to be made to the `hosts` file.
 
+![gif](https://user-images.githubusercontent.com/27323911/153735613-30917e1e-1683-494d-8bf7-8cd3b3e72ed7.gif)
+
 ## Functionality
 OpenMantleProxy starts a local HTTP server to process any received requests. After starting the HTTP server, OpenMantleProxy modifies the computer's `hosts` file to redirect any `s.optifine.net` (OptiFine cape server) requests to the newly-opened HTTP server. Different modes will make the redirect function differently.
 
