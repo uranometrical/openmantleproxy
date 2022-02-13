@@ -36,6 +36,13 @@ namespace Uranometrical.OpenMantleProxy.Server
 
                 byte[] buf = ResolveCape(context.Request.RawUrl ?? "");
 
+                if (buf == Array.Empty<byte>())
+                {
+                    context.Response.StatusCode = 404;
+                    context.Response.Close();
+                    continue;
+                }
+                
                 HttpListenerResponse response = context.Response;
                 response.ContentLength64 = buf.Length;
                 response.OutputStream.Write(buf);
@@ -63,7 +70,7 @@ namespace Uranometrical.OpenMantleProxy.Server
                 return stream is not MemoryStream memory ? Encoding.UTF8.GetBytes("404 uh oh") : memory.ToArray();
             }
 
-            return Encoding.UTF8.GetBytes("404 uh oh");
+            return Array.Empty<byte>();
         }
     }
 }
