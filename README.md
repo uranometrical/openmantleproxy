@@ -3,11 +3,11 @@ Open-source alternative to the traditional Mantle program, allowing you to pull 
 
 To run this program, please grab the latest release from [here](https://github.com/uranometrical/openmantleproxy/releases). You will need the .NET 6 SDK, which you can get from [here](https://dotnet.microsoft.com/en-us/download/dotnet/6.0).
 
-Please run this *before* opening any Minecraft instances. You have to run these commands (i.e. `dotnet Uranometrical.OpenMantleProxy.dll ...`) through the command line, as well. Be sure so your cmd process with admin privileges in order to allow modifications to be made to the `hosts` file.
+Please run this *before* opening any Minecraft instances. You have to run these commands (i.e. `dotnet Uranometrical.OpenMantleProxy.dll ...`) through the command line, as well. Be open your `cmd` process with admin privileges, as it is required to allow modifications to be made to the `hosts` file.
 
 ![gif](https://user-images.githubusercontent.com/27323911/153735613-30917e1e-1683-494d-8bf7-8cd3b3e72ed7.gif)
 
-If you would rather not use the command line, I have provided `.bat` scripts (for Windows) and `.sh` scripts (for *Nix) as an alternative. `.sh` scripts must be ran as root, but `.bat` scripts will instead prompt the user for admin privileges.
+If you would rather not use the command line, I have provided `.bat` scripts (for Windows) and `.sh` scripts (for \*Nix) as an alternative. `.sh` scripts must be ran as root, but `.bat` scripts will instead prompt the user for admin privileges.
 
 ## Functionality
 OpenMantleProxy starts a local HTTP server to process any received requests. After starting the HTTP server, OpenMantleProxy modifies the computer's `hosts` file to redirect any `s.optifine.net` (OptiFine cape server) requests to the newly-opened HTTP server. Different modes will make the redirect function differently.
@@ -28,7 +28,7 @@ There are four different proxy modes in OpenMantleProxy, detailed below:
 `optimantle` initially sends an HTTP request to `s.optifine.net`. If a cape is not resolved, then an HTTP request is sent to `capes.mantle.gg`.
 
 #### `mantlefine`
-`mantlefine` functions identically to `optifine`, just in reverse.
+`mantlefine` functions identically to `optimantle`, just in reverse.
 
 #### `custom`
 `custom` ignores any predefined servers and instead expects an additional input (`--servers`/`-s`), which it will pull from for capes instead.
